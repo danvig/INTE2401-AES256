@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+    <title>AES Encryption</title>
+</head>
+<body>
+    <!-- Encryption -->
+    <h2>AES Encryption</h2>
+    <span>
+        <label for="encPlaintext">plaintext:</label>
+        <input type="text" id="encPlaintext" placeholder="Please enter string" class="input">
+    </span>
+
+    <br><br>
+
+    <span>
+        <label for="encKey">key:</label>
+        <input type="text" id="encKey" placeholder="Please enter hexadecimal" class="input">
+    </span>
+
+    <br><br>
+
+    <button id="encrypt" class="btnSubmit" onclick="encrypt()">Encrypt</button>
+
+    <br><br>
+
+    <span id="encOutput" style="color:red;">Encrypted result: </span>
+
+    <br><br>
+
+    <!-- Decryption -->
+    <h2>AES Decryption</h2>
+    <span>
+        <label for="decCiphertext">ciphertext:</label>
+        <input type="text" id="decCiphertext" placeholder="Please enter encrypted result" class="input">
+    </span>
+
+    <br><br>
+
+    <span>
+        <label for="decKey">key:</label>
+        <input type="text" id="decKey" placeholder="Please enter hexadecimal" class="input">
+    </span>
+
+    <br><br>
+
+    <button id="decrypt" class="btnSubmit" onclick="decrypt()">Decrypt</button>
+
+    <br><br>
+
+    <span id="decOutput" style="color:red;">Decrypted result: </span>
+</body>
+
+<style>
+    html, body {
+        font-family:'Times New Roman', Times, serif;
+        color:black;
+        padding-left:10px;
+    }
+
+    .input {
+        width:300px;
+        color:black;
+    }
+
+    .btnSubmit {
+        font-size:14px;
+    }
+</style>
+
+<script>
+    function encrypt() {
+        // GET PLAINTEXT INPUT
+        // Get user entered plaintext
+        var plaintext = document.getElementById('encPlaintext').value;
+        var textBytes = aesjs.utils.utf8.toBytes(plaintext);
+        // Evaluate size
+        if(plaintext.length%16!=0){
+            alert("Your entered plaintext is "+plaintext.length/2+" bytes!\n\n"+"The length of plaintext must be a multiple of 16 bytes!\n\nPlease re-enter the plaintext!");
+            return false;
+        }
+
+        // GET KEY INPUT
+        // Get user entered key (hexadecimal)
+        var key = document.getElementById('encKey').value;
+        // check length of key
+        //          p.g. 1 byte = 2 hex digit
+        if(key.length%32!=0){
+            alert("Your entered key is "+key.length/2+" bytes!\n\n"+"The length of key must be a multiple of 16 bytes (32 hex digits)!\n\nPlease re-enter the key!");
+            return false;
+        }
+
+        // Encryption process
+        key = aesjs.utils.hex.toBytes(key);
+        var aesEcb = new aesjs.ModeOfOperation.ecb(key);
+        var encryptedBytes = aesEcb.encrypt(textBytes);
+        var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+        console.log(encryptedHex);
+
+        // Output
+        document.getElementById("encOutput").innerText = "Encrypted result: " + encryptedHex;
+    }
+
+    function decrypt() {
+        // GET CIPHERTEXT INPUT
+        // Get user entered ciphertext
+        var ciphertext = document.getElementById('decCiphertext').value;
+        // Evaluate size
+        if(ciphertext.length%32!=0) {
+            alert("Your entered plaintext is "+ciphertext.length/2+" bytes!\n\n"+"The length of ciphertext must be a multiple of 16 bytes (32 hex digits)!\n\nPlease re-enter the ciphertext!");
+            return false;
+        }
+
+        // GET KEY INPUT
+        // Get user entered key (hexadecimal)
+        var key = document.getElementById('decKey').value;
+        // Evaluate size
+        if(key.length%32!=0) {
+            alert("Your entered key is "+key.length/2+" bytes!\n\n"+"The length of key must be a multiple of 16 bytes (32 hex digits)!\n\nPlease re-enter the key!");
+            return false;
+        }
+
+        // Decryption process
+        key = aesjs.utils.hex.toBytes(key);
+        var encryptedBytes = aesjs.utils.hex.toBytes(ciphertext);
+        var aesEcb = new aesjs.ModeOfOperation.ecb(key);
+        var decryptedBytes = aesEcb.decrypt(encryptedBytes);
+        var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+        
+        // Output
+        document.getElementById("decOutput").innerText = "Decrypted result: " + decryptedText;
+
+    }
+</script>
+</html>

@@ -6,6 +6,8 @@ Author: Daniel Viglietti s3844180
 
 Date: 15/04/2022
 
+Updated on 2/05/2022 to use CTR instead of EBC
+
 JavaScript Web Interface for Cloud AES256 Encryption
 
 Dependencies: https://www.npmjs.com/package/aes-js

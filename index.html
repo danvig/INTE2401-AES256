@@ -93,13 +93,14 @@
             alert("Your entered key is "+key.length/2+" bytes!\n\n"+"The length of key must be a multiple of 16 bytes (32 hex digits)!\n\nPlease re-enter the key!");
             return false;
         }
-
-        // Encryption process
         key = aesjs.utils.hex.toBytes(key);
-        var aesEcb = new aesjs.ModeOfOperation.ecb(key);
-        var encryptedBytes = aesEcb.encrypt(textBytes);
+
+        // The counter is optional, and if omitted will begin at 1
+        var aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
+        var encryptedBytes = aesCtr.encrypt(textBytes);
+
+        // To print or store the binary data, you may convert it to hex
         var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
-        console.log(encryptedHex);
 
         // Output
         document.getElementById("encOutput").innerText = "Encrypted result: " + encryptedHex;
@@ -127,8 +128,8 @@
         // Decryption process
         key = aesjs.utils.hex.toBytes(key);
         var encryptedBytes = aesjs.utils.hex.toBytes(ciphertext);
-        var aesEcb = new aesjs.ModeOfOperation.ecb(key);
-        var decryptedBytes = aesEcb.decrypt(encryptedBytes);
+        var aesCtr = new aesjs.ModeOfOperation.ctr(key, new aesjs.Counter(5));
+        var decryptedBytes = aesCtr.decrypt(encryptedBytes);
         var decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
         
         // Output
